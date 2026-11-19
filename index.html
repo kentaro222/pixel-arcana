@@ -16,7 +16,7 @@
   --line: #605171;
   --accent: #f4cea5;
   --focus: #debbff;
-  --art-paper: #fff;
+  --art-paper: #fff9ef;
   --sans: system-ui, "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
 }
 * { box-sizing: border-box; }
@@ -182,7 +182,7 @@ dialog::backdrop { background: #100c1dc2; }
         </fieldset>
         <label class="reverse"><input type="checkbox" id="include-reversed">逆位置も含める</label>
         <div class="actions">
-          <button class="primary" type="submit" id="draw-button">1枚引く</button>
+          <button class="primary" type="submit" id="draw-button">カードを引く</button>
           <button class="secondary" type="button" id="reset" disabled>リセット</button>
         </div>
         <p class="storage-note" id="storage-note">設定と最新の結果は、このブラウザに保存されます。</p>
@@ -371,7 +371,6 @@ function cardFace(id, flipped) {
 function syncControls() {
   form.elements.count.value = String(count);
   reversed.checked = state.includeReversed;
-  drawButton.textContent = count + "枚引く";
   resetButton.disabled = !state.result;
 }
 
