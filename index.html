@@ -67,7 +67,7 @@ fieldset { min-inline-size: 0; padding: 0; margin: 0 0 18px; border: 0; }
 .actions { margin-top: 27px; display: grid; gap: 8px; }
 .primary, .secondary { min-height: 44px; border-radius: 6px; font-size: .92rem; font-weight: 650; }
 .primary { background: var(--focus); color: var(--space); border: 1px solid transparent; }
-.primary:hover { background: #ead2ff; }
+.primary:hover:enabled { background: #ead2ff; }
 .secondary { background: transparent; border: 1px solid var(--line); color: var(--ink); }
 .secondary:hover:enabled { background: var(--selected); }
 .storage-note { margin-top: auto; padding-top: 24px; font-size: .79rem; color: var(--muted); }
@@ -575,7 +575,9 @@ function cardFace(id, flipped) {
 function syncControls() {
   form.elements.count.value = String(count);
   reversed.checked = state.includeReversed;
-  resetButton.disabled = !state.result;
+  const hasResult = state.result !== null;
+  drawButton.disabled = hasResult;
+  resetButton.disabled = !hasResult;
 }
 
 function renderSpread({ animate = false } = {}) {
@@ -624,6 +626,7 @@ form.addEventListener("change", event => {
 
 form.addEventListener("submit", event => {
   event.preventDefault();
+  if (state.result) return;
   const deck = cards.map((_, id) => id);
   state.result = Array.from({ length: count }, () => {
     const index = Math.floor(Math.random() * deck.length);
