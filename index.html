@@ -16,7 +16,7 @@
   --line: #605171;
   --accent: #f4cea5;
   --focus: #debbff;
-  --art-paper: #e5ded2;
+  --art-paper: #ddd5c8;
   --sans: system-ui, "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
 }
 * { box-sizing: border-box; }
@@ -41,9 +41,7 @@ button:disabled { cursor: default; opacity: .48; }
 .shell { width: min(1160px, calc(100% - 72px)); margin-inline: auto; }
 .site-header { border-bottom: 1px solid var(--line); background: #171429e8; }
 .header-inner { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 16px; }
-.wordmark { display: inline-flex; align-items: center; gap: 12px; color: inherit; text-decoration: none; font-size: 1.25rem; font-weight: 800; letter-spacing: .12em; white-space: nowrap; }
-.seal { width: 31px; height: 31px; display: grid; place-items: center; border: 1px solid currentColor; color: var(--accent); transform: rotate(45deg); border-radius: 5px; }
-.seal span { transform: rotate(-45deg); font-size: 1.15rem; }
+.wordmark { display: inline-flex; color: inherit; text-decoration: none; font-size: 1.25rem; font-weight: 800; letter-spacing: .12em; white-space: nowrap; }
 nav { display: flex; gap: 8px; }
 nav a { padding: 8px 15px; text-decoration: none; white-space: nowrap; border-radius: 6px; color: var(--muted); font-size: .875rem; font-weight: 650; }
 nav a[aria-current="page"], nav a:hover { color: var(--ink); background: var(--selected); }
@@ -89,7 +87,10 @@ fieldset { min-inline-size: 0; padding: 0; margin: 0 0 18px; border: 0; }
 }
 .table::before, .spread::before { content: ""; position: absolute; z-index: -1; pointer-events: none; }
 .table::before { inset: 12px; border-radius: 10px; border: 1px solid #eed0ae38; }
-.board-title { text-align: center; font-size: 1rem; font-weight: 700; line-height: 1.45; color: #f3d9c3; letter-spacing: .055em; margin-bottom: 20px; }
+.board-title { display: grid; text-align: center; font-size: 1rem; font-weight: 700; line-height: 1.45; color: #f3d9c3; letter-spacing: .055em; margin-bottom: 20px; }
+.board-title span { grid-area: 1 / 1; align-self: center; }
+.table:has(.card-face) .board-title-empty,
+.table:not(:has(.card-face)) :is(.board-title-result, .table-note) { visibility: hidden; }
 .spread { position: relative; width: 100%; display: flex; justify-content: center; align-items: start; gap: clamp(8px, 2vw, 22px); }
 .spread::before { width: min(72%, 395px); aspect-ratio: 1; border: 1px solid #ead0b52c; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 0 20px #f3dabe0d, 0 0 0 42px #f3dabe08; }
 .slot { width: min(29vw, 153px); min-width: 0; text-align: center; }
@@ -98,13 +99,22 @@ fieldset { min-inline-size: 0; padding: 0; margin: 0 0 18px; border: 0; }
 .card::before { content: ""; pointer-events: none; position: absolute; inset: 5px; border: 1px solid var(--card-trim); border-radius: 6px; }
 .card-face { --card-trim: #d9cde3; justify-content: space-between; color: #231b32; background: var(--art-paper); }
 .card-face:hover { --card-trim: #a98abc; border-color: #bf9ad7; }
+@media (prefers-reduced-motion: no-preference) {
+  .card-reveal { animation: card-reveal 360ms ease-out backwards; }
+  .slot:nth-child(2) .card-reveal { animation-delay: 55ms; }
+  .slot:nth-child(3) .card-reveal { animation-delay: 110ms; }
+  @keyframes card-reveal {
+    from { transform: perspective(540px) rotateY(-72deg); box-shadow: 0 0 20px #debbff70; }
+    to { transform: none; }
+  }
+}
 .card-no { font-size: .77rem; font-weight: 700; line-height: 1.3; color: #654971; letter-spacing: .07em; }
 .card-name { font-size: clamp(.72rem, 1.75vw, 1rem); font-weight: 700; line-height: 1.25; overflow-wrap: anywhere; }
 .card-en { font-size: .62rem; line-height: 1.15; color: #655773; margin-top: 4px; }
 .card-back { --card-trim: #e7b79955; justify-content: center; overflow: hidden; color: var(--accent); background: repeating-linear-gradient(135deg, #f6d7c709 0 1px, transparent 1px 9px), linear-gradient(150deg, #46365c, #2a2340); }
 .card-back::after { content: ""; position: absolute; inset: 10px; border: 1px dotted #e7b79966; border-radius: 4px; }
 .back-glyph { display: grid; place-items: center; width: 46%; aspect-ratio: 1; border: 1px solid #d7aa97a9; border-radius: 50%; box-shadow: 0 0 0 5px #d7aa9718; font-size: clamp(1rem, 3vw, 1.8rem); }
-.orientation { display: block; margin-top: 8px; font-size: .8rem; color: #e8cce0; }
+.orientation { display: block; min-block-size: 1lh; margin-top: 8px; font-size: .8rem; color: #e8cce0; }
 .orientation.is-reversed { color: #ffca9d; }
 .table-note { text-align: center; margin-top: 22px; font-size: .83rem; color: #ead1e0; }
 canvas { display: block; width: 76%; max-width: 116px; aspect-ratio: 1; height: auto; image-rendering: pixelated; }
@@ -145,7 +155,6 @@ dialog::backdrop { background: #100c1dc2; }
 @media (max-width: 470px) {
   .header-inner { flex-wrap: wrap; justify-content: center; padding-block: 12px 8px; gap: 8px; }
   .wordmark { justify-content: center; width: 100%; font-size: 1rem; }
-  .seal { width: 23px; height: 23px; }
   nav a { padding: 5px 12px; }
   .guide-grid { grid-template-columns: 1fr; }
   .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
@@ -155,7 +164,7 @@ dialog::backdrop { background: #100c1dc2; }
 <body>
 <header class="site-header">
   <div class="shell header-inner">
-    <a class="wordmark" href="#draw"><span class="seal" aria-hidden="true"><span>✦</span></span> PIXEL ARCANA</a>
+    <a class="wordmark" href="#draw">PIXEL ARCANA</a>
     <nav aria-label="メイン">
       <a href="#draw" aria-current="page">占う</a>
       <a href="#library">カード図鑑</a>
@@ -180,12 +189,15 @@ dialog::backdrop { background: #100c1dc2; }
           <button class="primary" type="submit" id="draw-button">カードを引く</button>
           <button class="secondary" type="button" id="reset" disabled>リセット</button>
         </div>
-        <p class="storage-note" id="storage-note">設定と最新の結果は、このブラウザに保存されます。</p>
+        <p class="storage-note" id="storage-note" role="status" hidden>このブラウザでは保存できません。現在のページを開いている間は使えます。</p>
       </form>
       <div class="table" aria-label="占い結果">
-        <h2 class="board-title" id="board-title">カードを引くとここに並びます</h2>
+        <h2 class="board-title">
+          <span class="board-title-empty">カードを引くとここに並びます</span>
+          <span class="board-title-result">あなたが引いたカード</span>
+        </h2>
         <div class="spread" id="spread"></div>
-        <p class="table-note" id="table-note" hidden>カードをタップすると詳しい意味が開きます。</p>
+        <p class="table-note">カードをタップすると詳しい意味が開きます。</p>
         <span class="sr-only" id="announcement" role="status"></span>
       </div>
     </div>
@@ -302,7 +314,7 @@ function readState() {
 }
 
 function reportStorageUnavailable() {
-  storageNote.textContent = "このブラウザでは保存できません。現在のページを開いている間は使えます。";
+  storageNote.hidden = false;
 }
 
 function saveState() {
@@ -362,11 +374,9 @@ function syncControls() {
   resetButton.disabled = !state.result;
 }
 
-function renderSpread() {
+function renderSpread({ animate = false } = {}) {
   const result = state.result;
   spread.replaceChildren();
-  document.getElementById("board-title").textContent = result ? "あなたが引いたカード" : "カードを引くとここに並びます";
-  document.getElementById("table-note").hidden = !result;
   const size = result?.length ?? count;
 
   for (let index = 0; index < size; index++) {
@@ -375,12 +385,14 @@ function renderSpread() {
     slot.append(make("p", "slot-label", label));
     if (result) {
       const { id, flipped } = result[index];
-      slot.append(cardFace(id, flipped), make("span", "orientation" + (flipped ? " is-reversed" : ""), direction(flipped)));
+      const face = cardFace(id, flipped);
+      if (animate) face.classList.add("card-reveal");
+      slot.append(face, make("span", "orientation" + (flipped ? " is-reversed" : ""), direction(flipped)));
     } else {
       const back = make("div", "card card-back");
       back.setAttribute("aria-hidden", "true");
       back.append(make("span", "back-glyph", "✦"));
-      slot.append(back);
+      slot.append(back, make("span", "orientation"));
     }
     spread.append(slot);
   }
@@ -406,7 +418,7 @@ form.addEventListener("submit", event => {
   });
   saveState();
   syncControls();
-  renderSpread();
+  renderSpread({ animate: true });
   announcement.textContent = "引いたカード。 " + state.result.map(card =>
     cards[card.id][0] + "、" + direction(card.flipped)).join("。");
 });
