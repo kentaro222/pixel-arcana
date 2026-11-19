@@ -405,14 +405,23 @@ function renderSpread({ animate = false } = {}) {
   }
 }
 
+function resetReading() {
+  if (state.result) {
+    state.result = null;
+    saveState();
+    announcement.textContent = "結果をリセットしました。";
+  }
+  syncControls();
+  renderSpread();
+}
+
 form.addEventListener("change", event => {
   if (event.target === reversed) {
     state.includeReversed = reversed.checked;
     saveState();
   } else {
     count = Number(form.elements.count.value);
-    syncControls();
-    if (!state.result) renderSpread();
+    resetReading();
   }
 });
 
@@ -431,12 +440,8 @@ form.addEventListener("submit", event => {
 });
 
 resetButton.addEventListener("click", () => {
-  state.result = null;
-  saveState();
-  syncControls();
-  renderSpread();
+  resetReading();
   drawButton.focus();
-  announcement.textContent = "結果をリセットしました。";
 });
 
 function showPage() {
