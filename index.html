@@ -16,7 +16,7 @@
   --line: #605171;
   --accent: #f4cea5;
   --focus: #debbff;
-  --art-paper: #fff9ef;
+  --art-paper: #e5ded2;
   --sans: system-ui, "Hiragino Sans", "Yu Gothic", "Noto Sans CJK JP", sans-serif;
 }
 * { box-sizing: border-box; }
@@ -87,11 +87,11 @@ fieldset { min-inline-size: 0; padding: 0; margin: 0 0 18px; border: 0; }
     radial-gradient(ellipse at 58% 12%, #59396d99, transparent 67%),
     radial-gradient(ellipse at 27% 69%, #343863, #211d38 62%, #161523);
 }
-.table::before, .table::after { content: ""; position: absolute; z-index: -1; pointer-events: none; }
+.table::before, .spread::before { content: ""; position: absolute; z-index: -1; pointer-events: none; }
 .table::before { inset: 12px; border-radius: 10px; border: 1px solid #eed0ae38; }
-.table::after { width: min(66%, 395px); aspect-ratio: 1; border: 1px solid #ead0b52c; border-radius: 50%; top: 47%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 0 20px #f3dabe0d, 0 0 0 42px #f3dabe08; }
 .board-title { text-align: center; font-size: 1rem; font-weight: 700; line-height: 1.45; color: #f3d9c3; letter-spacing: .055em; margin-bottom: 20px; }
-.spread { width: 100%; display: flex; justify-content: center; align-items: start; gap: clamp(8px, 2vw, 22px); }
+.spread { position: relative; width: 100%; display: flex; justify-content: center; align-items: start; gap: clamp(8px, 2vw, 22px); }
+.spread::before { width: min(72%, 395px); aspect-ratio: 1; border: 1px solid #ead0b52c; border-radius: 50%; top: 50%; left: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 0 20px #f3dabe0d, 0 0 0 42px #f3dabe08; }
 .slot { width: min(29vw, 153px); min-width: 0; text-align: center; }
 .slot-label { font-size: .79rem; color: #e1c8da; letter-spacing: .1em; margin-bottom: 6px; }
 .card { width: 100%; aspect-ratio: .66; position: relative; display: flex; flex-direction: column; align-items: center; padding: 9px 5px; border: 1px solid #bd9086; border-radius: 10px; box-shadow: 0 9px 20px #130e1a57; }
@@ -107,10 +107,6 @@ fieldset { min-inline-size: 0; padding: 0; margin: 0 0 18px; border: 0; }
 .orientation { display: block; margin-top: 8px; font-size: .8rem; color: #e8cce0; }
 .orientation.is-reversed { color: #ffca9d; }
 .table-note { text-align: center; margin-top: 22px; font-size: .83rem; color: #ead1e0; }
-details { margin-top: 14px; width: min(100%, 620px); text-align: center; font-size: .875rem; }
-summary { width: fit-content; margin-inline: auto; cursor: pointer; color: #f2d0ae; text-underline-offset: .25em; }
-details ul { list-style: none; padding: 9px 11px; margin: 8px 0 0; background: #2016258c; border: 1px solid #e7b7993d; border-radius: 7px; text-align: left; }
-details li + li { margin-top: 5px; }
 canvas { display: block; width: 76%; max-width: 116px; aspect-ratio: 1; height: auto; image-rendering: pixelated; }
 canvas.is-reversed { transform: rotate(180deg); }
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 119px), 1fr)); gap: 16px; }
@@ -121,7 +117,6 @@ canvas.is-reversed { transform: rotate(180deg); }
 .guide-grid h2 { font-size: 1.25rem; font-weight: 700; line-height: 1.4; margin-bottom: 8px; }
 .guide-grid p { color: var(--muted); }
 .guide-grid p + p { margin-top: 8px; }
-footer { border-top: 1px solid var(--line); margin-top: 36px; padding-block: 17px; color: var(--muted); font-size: .81rem; }
 dialog { position: fixed; width: min(490px, calc(100% - 32px)); max-height: calc(100% - 40px); padding: 26px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 13px; }
 dialog::backdrop { background: #100c1dc2; }
 .dialog-top { display: flex; align-items: start; gap: 18px; margin-bottom: 17px; }
@@ -191,10 +186,6 @@ dialog::backdrop { background: #100c1dc2; }
         <h2 class="board-title" id="board-title">カードを引くとここに並びます</h2>
         <div class="spread" id="spread"></div>
         <p class="table-note" id="table-note" hidden>カードをタップすると詳しい意味が開きます。</p>
-        <details id="keywords" hidden>
-          <summary>カードのキーワード</summary>
-          <ul id="keyword-list"></ul>
-        </details>
         <span class="sr-only" id="announcement" role="status"></span>
       </div>
     </div>
@@ -218,7 +209,6 @@ dialog::backdrop { background: #100c1dc2; }
       <article><h2>結果を見返す</h2><p>最新の結果は、占う画面に戻ったときや再読み込みしたときも表示されます。リセットすると結果だけが消え、逆位置の設定は残ります。</p></article>
     </div>
   </section>
-  <footer>PIXEL ARCANA · 大アルカナ22枚</footer>
 </main>
 <dialog id="card-detail" aria-labelledby="detail-title">
   <div id="detail-content"></div>
@@ -260,8 +250,6 @@ const reversed = document.getElementById("include-reversed");
 const drawButton = document.getElementById("draw-button");
 const resetButton = document.getElementById("reset");
 const spread = document.getElementById("spread");
-const keywordDetails = document.getElementById("keywords");
-const keywordList = document.getElementById("keyword-list");
 const dialog = document.getElementById("card-detail");
 const announcement = document.getElementById("announcement");
 const storageNote = document.getElementById("storage-note");
@@ -377,10 +365,8 @@ function syncControls() {
 function renderSpread() {
   const result = state.result;
   spread.replaceChildren();
-  keywordList.replaceChildren();
   document.getElementById("board-title").textContent = result ? "あなたが引いたカード" : "カードを引くとここに並びます";
   document.getElementById("table-note").hidden = !result;
-  keywordDetails.hidden = !result;
   const size = result?.length ?? count;
 
   for (let index = 0; index < size; index++) {
@@ -390,7 +376,6 @@ function renderSpread() {
     if (result) {
       const { id, flipped } = result[index];
       slot.append(cardFace(id, flipped), make("span", "orientation" + (flipped ? " is-reversed" : ""), direction(flipped)));
-      keywordList.append(make("li", "", label + " · " + cards[id][0] + "（" + direction(flipped) + "）　" + meaning(id, flipped)[0]));
     } else {
       const back = make("div", "card card-back");
       back.setAttribute("aria-hidden", "true");
@@ -421,7 +406,6 @@ form.addEventListener("submit", event => {
   });
   saveState();
   syncControls();
-  keywordDetails.open = false;
   renderSpread();
   announcement.textContent = "引いたカード。 " + state.result.map(card =>
     cards[card.id][0] + "、" + direction(card.flipped)).join("。");
@@ -431,7 +415,6 @@ resetButton.addEventListener("click", () => {
   state.result = null;
   saveState();
   syncControls();
-  keywordDetails.open = false;
   renderSpread();
   drawButton.focus();
   announcement.textContent = "結果をリセットしました。";
