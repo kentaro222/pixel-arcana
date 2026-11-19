@@ -122,8 +122,8 @@ fieldset { min-inline-size: 0; padding: 0; margin: 0 0 18px; border: 0; }
 .table-note { text-align: center; margin-top: 22px; font-size: .83rem; color: #ead1e0; }
 canvas { display: block; width: 76%; max-width: 116px; aspect-ratio: 1; height: auto; image-rendering: pixelated; }
 canvas.is-reversed { transform: rotate(180deg); }
-.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 119px), 1fr)); gap: 16px; }
-.gallery .card { max-width: none; }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 152px), 1fr)); gap: 16px; }
+.gallery canvas { width: 90%; max-width: 160px; }
 .gallery .card-name { font-size: .93rem; }
 .guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
 .guide-grid article { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: clamp(17px, 3vw, 28px); }
@@ -132,9 +132,9 @@ canvas.is-reversed { transform: rotate(180deg); }
 .guide-grid p + p { margin-top: 8px; }
 dialog { position: fixed; width: min(490px, calc(100% - 32px)); max-height: calc(100% - 40px); padding: 26px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 13px; }
 dialog::backdrop { background: #100c1dc2; }
-.dialog-top { display: flex; align-items: start; gap: 18px; margin-bottom: 17px; }
-.dialog-art { width: 89px; flex: 0 0 89px; display: grid; place-items: center; aspect-ratio: 1; background: var(--art-paper); border: 1px solid var(--line); border-radius: 7px; }
-.dialog-art canvas { width: 86%; }
+.dialog-top { display: grid; justify-items: center; gap: 14px; margin-bottom: 17px; text-align: center; }
+.dialog-art { width: min(100%, 256px); display: grid; place-items: center; aspect-ratio: 1; background: var(--art-paper); border: 1px solid var(--line); border-radius: 7px; }
+.dialog-art canvas { width: 94%; max-width: none; }
 .dialog-top h2 { font-size: 1.5rem; font-weight: 700; line-height: 1.35; }
 .dialog-top p { color: var(--muted); font-size: .87rem; }
 .meaning { border-top: 1px solid var(--line); padding: 12px 0; }
@@ -160,7 +160,8 @@ dialog::backdrop { background: #100c1dc2; }
   .wordmark { justify-content: center; width: 100%; font-size: 1rem; }
   nav a { padding: 5px 12px; }
   .guide-grid { grid-template-columns: 1fr; }
-  .gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; }
+  .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  dialog { padding: 18px; }
 }
 </style>
 </head>
@@ -227,7 +228,7 @@ dialog::backdrop { background: #100c1dc2; }
 </main>
 <dialog id="card-detail" aria-labelledby="detail-title">
   <div id="detail-content"></div>
-  <form method="dialog"><button class="secondary dialog-close" autofocus>閉じる</button></form>
+  <form method="dialog"><button class="secondary dialog-close">閉じる</button></form>
 </dialog>
 <script>
 "use strict";
@@ -344,8 +345,10 @@ function openDetail(id, flipped) {
   const heading = make("div");
   const title = make("h2", "", name);
   title.id = "detail-title";
+  title.tabIndex = -1;
+  title.autofocus = true;
   heading.append(make("p", "", roman[id] + " · " + english), title);
-  top.append(art, heading);
+  top.append(heading, art);
   const content = document.getElementById("detail-content");
   content.replaceChildren(top);
   for (const face of flipped === undefined ? [false, true] : [flipped]) {
@@ -355,6 +358,7 @@ function openDetail(id, flipped) {
     content.append(section);
   }
   dialog.showModal();
+  dialog.scrollTop = 0;
 }
 
 function cardFace(id, flipped) {
