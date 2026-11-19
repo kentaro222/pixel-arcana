@@ -125,11 +125,20 @@ canvas.is-reversed { transform: rotate(180deg); }
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 152px), 1fr)); gap: 16px; }
 .gallery canvas { width: 90%; max-width: 160px; }
 .gallery .card-name { font-size: .93rem; }
-.guide-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 17px; }
-.guide-grid article { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: clamp(17px, 3vw, 28px); }
-.guide-grid h2 { font-size: 1.25rem; font-weight: 700; line-height: 1.4; margin-bottom: 8px; }
-.guide-grid p { color: var(--muted); }
-.guide-grid p + p { margin-top: 8px; }
+#guide { max-width: 920px; margin-inline: auto; }
+.guide-content { display: grid; gap: 17px; }
+.guide-content article { background: var(--surface); border: 1px solid var(--line); border-radius: 11px; padding: clamp(17px, 3vw, 28px); }
+.guide-content h2 { font-size: 1.25rem; font-weight: 700; line-height: 1.4; margin-bottom: 8px; }
+.guide-content h3 { font-size: 1rem; line-height: 1.55; color: var(--accent); margin-bottom: 10px; }
+.guide-content p { color: var(--muted); }
+.guide-content strong { color: var(--ink); }
+.guide-examples { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin-top: 18px; }
+.guide-example { border-top: 1px solid var(--line); padding-top: 14px; }
+.guide-content article > .guide-example { margin-top: 18px; }
+.guide-card-row { display: grid; grid-template-columns: clamp(76px, 16vw, 108px) minmax(0, 1fr); align-items: start; gap: clamp(10px, 2vw, 16px); }
+.guide-steps { display: grid; gap: 14px; margin: 0 0 14px; padding-inline-start: 1.5em; }
+.guide-steps li::marker { color: var(--accent); font-weight: 700; }
+.guide-steps li > strong { display: block; margin-bottom: 5px; }
 dialog { position: fixed; width: min(490px, calc(100% - 32px)); max-height: calc(100% - 40px); padding: 26px; color: var(--ink); background: var(--surface); border: 1px solid var(--line); border-radius: 13px; }
 dialog::backdrop { background: #100c1dc2; }
 .dialog-top { display: grid; justify-items: center; gap: 14px; margin-bottom: 17px; text-align: center; }
@@ -154,12 +163,12 @@ dialog::backdrop { background: #100c1dc2; }
   .table { min-height: 320px; padding: 24px 18px; }
   .slot { width: min(26vw, 132px); }
   .card-en { display: none; }
+  .guide-examples { grid-template-columns: 1fr; }
 }
 @media (max-width: 470px) {
   .header-inner { flex-wrap: wrap; justify-content: center; padding-block: 12px 8px; gap: 8px; }
   .wordmark { justify-content: center; width: 100%; font-size: 1rem; }
   nav a { padding: 5px 12px; }
-  .guide-grid { grid-template-columns: 1fr; }
   .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
   dialog { padding: 18px; }
 }
@@ -216,13 +225,69 @@ dialog::backdrop { background: #100c1dc2; }
   <section id="guide" aria-labelledby="guide-title" hidden>
     <div class="intro">
       <h1 id="guide-title">ガイド</h1>
-      <p>質問の立て方と、引いたカードの読み方。</p>
+      <p>占いたいことをひとつ思い浮かべて、カードを引いてみましょう。「気になる人を食事に誘おうか？」「今の職場に残るか、転職活動を始めるか？」のように、いま迷っていることをそのまま問いにできます。「今日はどんな一日になりそう？」と、今日の運勢を占うのもいいですね。</p>
+      <p>カードが出たら、まずキーワードを読みます。気になる言葉があったら、今回の問いでは何を指していそうか考えてみましょう。詳しい意味は、カードをタップすると読めます。</p>
     </div>
-    <div class="guide-grid">
-      <article><h2>1枚引き</h2><p>「今日、何を意識するとよさそう？」と問い、絵柄やキーワードから気になるものを一つ選びます。たとえば「節制」が出たら、予定の合間に休憩を入れることを考えてみてもよいでしょう。</p></article>
-      <article><h2>3枚引き</h2><p>引く前に各カードの役割を決めます。「過去・現在・未来」や「状況・課題・助言」など、問いに合う並べ方を選べます。</p><p>「新しいことを始めるには？」なら、1枚目で今の状況、2枚目で気をつけること、3枚目で次の一歩を考えてみましょう。</p></article>
-      <article><h2>逆位置</h2><p>「逆位置も含める」をオンにすると、カードごとに正位置・逆位置が半々の確率で出ます。逆位置の意味から、力を入れすぎていることや、いったん見直せることを探してみましょう。</p></article>
-      <article><h2>結果を見返す</h2><p>最新の結果は、占う画面に戻ったときや再読み込みしたときも表示されます。リセットすると結果だけが消え、逆位置の設定は残ります。</p></article>
+    <div class="guide-content">
+      <article>
+        <h2>1枚引き</h2>
+        <p>ひとつの問いについて考えたいときや、今日の運勢を占いたいときに向いています。</p>
+        <div class="guide-examples">
+          <section class="guide-example">
+            <h3>恋愛の問い「気になる人を、今週末ふたりで食事に誘おうか？」</h3>
+            <div class="guide-card-row">
+              <div data-guide-card="恋人"></div>
+              <p>出たカードは <strong>恋人</strong>。キーワードは「つながり・選択・価値観」です。今回は「選択」が気になりました。もう少し話してみたい気持ちがあるので、今週末の食事に誘ってみます。「土曜、よかったらごはん行かない？」くらいなら、自分の気持ちを伝えつつ、相手も都合に合わせて返事ができそうです。</p>
+            </div>
+          </section>
+          <section class="guide-example">
+            <h3>今日の運勢「今日はどんな一日になりそう？」</h3>
+            <div class="guide-card-row">
+              <div data-guide-card="太陽"></div>
+              <p>出たカードは <strong>太陽</strong>。キーワードは「喜び・明るさ・活力」です。「喜び」から、今日はうれしかったことを誰かと分かち合える日になりそう、と読みました。いいことがあったら、帰り道に友だちにメッセージを送ってみようかな。</p>
+            </div>
+          </section>
+        </div>
+      </article>
+      <article>
+        <h2>3枚引き</h2>
+        <p>引く前に、3枚それぞれの役割を決めます。判断に迷っているときは「状況・課題・助言」、これまでの流れと先の見通しを考えたいときは「過去・現在・未来」として読めます。</p>
+        <section class="guide-example">
+          <h3>仕事の問い「今の職場に残るか、転職活動を始めるか？」</h3>
+          <ol class="guide-steps">
+            <li>
+              <strong>状況｜皇帝「安定」</strong>
+              <div class="guide-card-row">
+                <div data-guide-card="皇帝"></div>
+                <p>今の仕事は慣れていて、収入や働き方の見通しも立つ。この安定は、次を考えるときにも大事にしたい。</p>
+              </div>
+            </li>
+            <li>
+              <strong>課題｜月「曖昧さ」</strong>
+              <div class="guide-card-row">
+                <div data-guide-card="月"></div>
+                <p>転職したい気持ちはあるけれど、何を変えたいのかがまだ曖昧。仕事内容、給与、働く時間のうち、いちばん変えたいのはどれだろう。</p>
+              </div>
+            </li>
+            <li>
+              <strong>助言｜魔術師「実行」</strong>
+              <div class="guide-card-row">
+                <div data-guide-card="魔術師"></div>
+                <p>これまでの経験を書き出して、それを活かせそうな求人を見てみよう。応募するかどうかは、仕事内容や条件が分かってから決められる。</p>
+              </div>
+            </li>
+          </ol>
+          <p>この3枚から、今の職場で働きながら、転職活動の準備を始めると読みました。</p>
+        </section>
+      </article>
+      <article>
+        <h2>逆位置</h2>
+        <p>初期設定では正位置だけで引きます。「逆位置も含める」をオンにすると、次に引くカードは、1枚ごとに正位置・逆位置が半々の確率で出ます。</p>
+        <div class="guide-card-row guide-example">
+          <div data-guide-card="戦車" data-reversed></div>
+          <p>逆位置が出たら、その向きのキーワードを読みます。たとえば「転職活動を始めるか？」という問いで <strong>戦車の逆位置</strong>が出て、「焦り」が気になったら、「急いで応募先を決める前に、希望する条件をひとつ書き出してみよう」と読めます。</p>
+        </div>
+      </article>
     </div>
   </section>
 </main>
@@ -596,6 +661,10 @@ function restore() {
 }
 
 document.getElementById("gallery").append(...cards.map((_, id) => cardFace(id)));
+for (const example of document.querySelectorAll("[data-guide-card]")) {
+  const id = cards.findIndex(([name]) => name === example.dataset.guideCard);
+  example.append(cardFace(id, example.hasAttribute("data-reversed")));
+}
 window.addEventListener("hashchange", showPage);
 window.addEventListener("pageshow", event => { if (event.persisted) restore(); });
 window.addEventListener("storage", event => { if (event.key === storageKey || event.key === null) restore(); });
