@@ -120,6 +120,11 @@ fieldset { min-inline-size: 0; padding: 0; margin: 0 0 18px; border: 0; }
 .orientation { display: block; min-block-size: 1lh; margin-top: 8px; font-size: .8rem; color: #e8cce0; }
 .orientation.is-reversed { color: #ffca9d; }
 .table-note { text-align: center; margin-top: 22px; font-size: .83rem; color: #ead1e0; }
+.result-keywords { margin-top: 16px; padding: 8px 16px; border: 1px solid var(--line); border-radius: 11px; background: var(--surface); }
+.result-keywords summary { min-height: 44px; align-content: center; cursor: pointer; color: var(--accent); font-weight: 650; }
+.result-keywords[open] .when-closed, .result-keywords:not([open]) .when-open { display: none; }
+.result-keywords ol { margin: 4px 0 12px; padding-inline-start: 24px; color: var(--muted); }
+.result-keywords li + li { margin-top: 6px; }
 canvas { display: block; width: 76%; max-width: 116px; aspect-ratio: 1; height: auto; image-rendering: pixelated; }
 canvas.is-reversed { transform: rotate(180deg); }
 .gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 152px), 1fr)); gap: 16px; }
@@ -214,6 +219,10 @@ dialog::backdrop { background: #100c1dc2; }
         <span class="sr-only" id="announcement" role="status"></span>
       </div>
     </div>
+    <details class="result-keywords" id="result-keywords" hidden>
+      <summary>カードのキーワード<span class="when-closed">を見る</span><span class="when-open">を閉じる</span></summary>
+      <ol id="keyword-list"></ol>
+    </details>
   </section>
   <section id="library" aria-labelledby="library-title" hidden>
     <div class="intro">
@@ -226,7 +235,7 @@ dialog::backdrop { background: #100c1dc2; }
     <div class="intro">
       <h1 id="guide-title">ガイド</h1>
       <p>占いたいことをひとつ思い浮かべて、カードを引いてみましょう。「気になる人を食事に誘おうか？」「今の職場に残るか、転職活動を始めるか？」のように、いま迷っていることをそのまま問いにできます。「今日はどんな一日になりそう？」と、今日の運勢を占うのもいいですね。</p>
-      <p>カードが出たら、まずキーワードを読みます。気になる言葉があったら、今回の問いでは何を指していそうか考えてみましょう。詳しい意味は、カードをタップすると読めます。</p>
+      <p>枚数を選んで「カードを引く」を押します。結果が出たら「カードのキーワードを見る」を開き、気になる言葉を今回の問いに重ねてみましょう。詳しい意味は、カードをタップすると読めます。次に引くときは「リセット」を押します。</p>
     </div>
     <div class="guide-content">
       <article>
@@ -463,6 +472,8 @@ const reversed = document.getElementById("include-reversed");
 const drawButton = document.getElementById("draw-button");
 const resetButton = document.getElementById("reset");
 const spread = document.getElementById("spread");
+const resultKeywords = document.getElementById("result-keywords");
+const keywordList = document.getElementById("keyword-list");
 const dialog = document.getElementById("card-detail");
 const announcement = document.getElementById("announcement");
 const storageNote = document.getElementById("storage-note");
@@ -558,12 +569,21 @@ function openDetail(id, flipped) {
   dialog.scrollTop = 0;
 }
 
+dialog.addEventListener("click", event => {
+  if (event.target !== dialog) return;
+  const { left, right, top, bottom } = dialog.getBoundingClientRect();
+  if (event.clientX < left || event.clientX > right || event.clientY < top || event.clientY > bottom) {
+    dialog.close();
+  }
+});
+
 function cardFace(id, flipped) {
   const [name, english] = cards[id];
   const card = make("button", "card card-face");
   card.type = "button";
   const label = flipped === undefined ? name : name + "／" + direction(flipped);
   card.setAttribute("aria-label", roman[id] + " " + label + "の意味を見る");
+  card.setAttribute("aria-haspopup", "dialog");
   const names = make("span");
   names.append(make("span", "card-name", name), make("span", "card-en", english));
   names.style.display = "grid";
@@ -602,6 +622,13 @@ function renderSpread({ animate = false } = {}) {
     }
     spread.append(slot);
   }
+
+  if (!result || animate) resultKeywords.open = false;
+  resultKeywords.hidden = !result;
+  keywordList.replaceChildren(...(result ?? []).map(({ id, flipped }) => {
+    const [keywords] = meaning(id, flipped);
+    return make("li", "", `${cards[id][0]}（${direction(flipped)}）：${keywords}`);
+  }));
 }
 
 function resetReading() {
@@ -620,7 +647,7 @@ form.addEventListener("change", event => {
     saveState();
   } else {
     count = Number(form.elements.count.value);
-    resetReading();
+    if (!state.result) renderSpread();
   }
 });
 
@@ -658,7 +685,7 @@ function showPage() {
 
 function restore() {
   state = readState();
-  count = state.result?.length ?? 1;
+  count = state.result?.length ?? count;
   syncControls();
   renderSpread();
 }
