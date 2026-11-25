@@ -2,7 +2,7 @@
   "id": "./",
   "name": "PIXEL ARCANA",
   "short_name": "PIXEL ARCANA",
-  "description": "ドット絵の大アルカナで占う、1枚引きと3枚引きのタロット。",
+  "description": "そぼくなドット絵のタロット占い",
   "lang": "ja",
   "start_url": "./",
   "scope": "./",
